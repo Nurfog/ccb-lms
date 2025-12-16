@@ -1,0 +1,27 @@
+# Archivos de entorno - ¡Contienen secretos!
+.env
+
+# Artefactos de compilación de Rust
+/target/
+
+# Archivos generados por sqlx-cli - ¡No deben ir al repositorio!
+.sqlx/
+
+# Archivos de configuración de IDEs comunes
+.vscode/
+.idea/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs y otros archivos temporales
+*.log
+
+# Datos de volúmenes de Docker (aunque se gestionan fuera, es una buena práctica)
+postgres_data/
+
+# Nota sobre Cargo.lock:
+# Para aplicaciones y monorepos como este, es una BUENA PRÁCTICA confirmar Cargo.lock.
+# Asegura que todos los desarrolladores y el entorno de producción usen exactamente
+# las mismas versiones de las dependencias, evitando errores sutiles.

@@ -1,0 +1,13 @@
+[package]
+name = "ccb-common"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = { workspace = true, features = ["macros"] }
+serde = { workspace = true, features = ["derive"] }
+uuid = { workspace = true, features = ["serde", "v4"] }
+jsonwebtoken = { workspace = true }
+sqlx = { workspace = true }
+chrono = { workspace = true, features = ["serde"] }
+tracing = "0.1"

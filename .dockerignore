@@ -1,0 +1,10 @@
+# Ignorar los artefactos de compilación de Rust.
+# No los necesitamos dentro del contenedor, ya que se compila desde cero.
+/target
+
+# Ignorar archivos específicos del IDE/editor
+.idea/
+.vscode/
+
+# No ignores el archivo .env, ya que puede ser útil para scripts locales.
+# No ignores la carpeta .sqlx, ¡la necesitamos para la compilación offline!

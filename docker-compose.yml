@@ -1,0 +1,84 @@
+services:
+  # --- Servicio de Autenticación ---
+  auth-service:
+    build:
+      context: . # El contexto es la raíz del proyecto
+      dockerfile: services/auth-service/Dockerfile # Ruta al Dockerfile específico
+    container_name: auth-service
+    ports:
+      - "8081:8080" # Mapea el puerto 8080 del contenedor al 8081 de tu máquina
+    environment:
+      - DATABASE_URL=postgres://lms_user:lms_password@db:5432/lms_db
+      - JWT_SECRET=una-clave-secreta-muy-larga-y-dificil-de-adivinar-cambiame
+      - RUST_LOG=info
+    depends_on:
+      - db # No inicies este servicio hasta que la base de datos esté lista
+    networks:
+      - lms-network
+
+  # --- Servicio de Cursos ---
+  course-service:
+    build:
+      context: .
+      dockerfile: services/course-service/Dockerfile
+    container_name: course-service
+    ports:
+      - "8082:8080"
+    environment:
+      - DATABASE_URL=postgres://lms_user:lms_password@db:5432/lms_db
+      - JWT_SECRET=una-clave-secreta-muy-larga-y-dificil-de-adivinar-cambiame
+      - RUST_LOG=info
+    depends_on:
+      - db
+    networks:
+      - lms-network
+
+  # --- Servicio de Inscripciones ---
+  enrollment-service:
+    build:
+      context: .
+      dockerfile: services/enrollment-service/Dockerfile
+    container_name: enrollment-service
+    ports:
+      - "8083:8080"
+    environment:
+      - DATABASE_URL=postgres://lms_user:lms_password@db:5432/lms_db
+      - JWT_SECRET=una-clave-secreta-muy-larga-y-dificil-de-adivinar-cambiame
+      - RUST_LOG=info
+    depends_on:
+      - db
+    networks:
+      - lms-network
+
+  # --- Frontend de Pruebas ---
+  frontend:
+    image: nginx:1.25-alpine
+    container_name: frontend-tester
+    ports:
+      - "8000:80" # Accede al frontend en http://localhost:8000
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro # Monta la carpeta del frontend
+    networks:
+      - lms-network
+
+  # --- Base de Datos PostgreSQL ---
+  db:
+    image: postgres:16-alpine # Usamos la versión Alpine de Postgres
+    container_name: postgres-db
+    environment:
+      - POSTGRES_USER=lms_user
+      - POSTGRES_PASSWORD=lms_password
+      - POSTGRES_DB=lms_db
+    ports:
+      - "5432:5432" # Expone el puerto de Postgres a tu máquina local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persiste los datos de la BD
+    networks:
+      - lms-network
+
+networks:
+  lms-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
