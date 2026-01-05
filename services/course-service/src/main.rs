@@ -1,5 +1,5 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use ccb_common::{AuthenticatedUser, UserRole};
+use ccb_common::{AuthenticatedUser, middleware::jwt_auth::{JwtMiddleware, Role as AuthRole}, UserRole};
 use actix_cors::Cors;
 use serde::{Deserialize, Serialize}; 
 use sqlx::{postgres::PgPoolOptions, FromRow, PgPool};
@@ -47,11 +47,6 @@ async fn create_course(
     auth_user: AuthenticatedUser,
     course_data: web::Json<CreateCourse>,
 ) -> impl Responder {
-    // Solo los instructores o administradores pueden crear cursos.
-    if auth_user.role != UserRole::Instructor && auth_user.role != UserRole::Admin {
-        return HttpResponse::Forbidden().body("Only instructors or admins can create courses");
-    }
-
     let new_course = sqlx::query_as!(
         Course,
         r#"
@@ -238,8 +233,11 @@ async fn main() -> std::io::Result<()> {
             // Agrupamos las rutas bajo el scope "/courses"
             .service(
                 web::scope("/courses")
-                    .route("", web::get().to(get_courses)) // GET /courses
-                    .route("", web::post().to(create_course)) // POST /courses
+                    .route("", web::get().to(get_courses))
+                    .route("", web::post().to(create_course).wrap(JwtMiddleware::new(vec![
+                        AuthRole::Instructor,
+                        AuthRole::Admin,
+                    ])))
                     .route("/{id}", web::get().to(get_course_by_id)) // GET /courses/{id}
                     .route("/{id}", web::put().to(update_course_by_id)) // PUT /courses/{id}
                     .route("/{id}", web::delete().to(delete_course_by_id)), // DELETE /courses/{id}

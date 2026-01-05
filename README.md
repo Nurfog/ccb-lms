@@ -29,6 +29,7 @@ El proyecto se divide en varios microservicios independientes que se comunican a
     *   `POST /register`: Registra un nuevo usuario.
     *   `POST /login`: Inicia sesión y devuelve un JWT.
     *   `GET /me`: (Ruta protegida) Devuelve la información del usuario autenticado.
+    *   `GET /users`: (Ruta protegida, solo Admin) Devuelve una lista de todos los usuarios.
 
 *   **Ejemplos de uso con `curl`**:
 
@@ -62,6 +63,13 @@ El proyecto se divide en varios microservicios independientes que se comunican a
         -H "Authorization: Bearer <TU_TOKEN_JWT>"
         ```
 
+    *   **Listar todos los usuarios (requiere token de Admin):**
+        ```bash
+        # Reemplaza <TU_TOKEN_DE_ADMIN> con el token de un usuario con rol 'admin'
+        curl -X GET http://localhost:8081/users \
+        -H "Authorization: Bearer <TU_TOKEN_DE_ADMIN>"
+        ```
+
 ### 2. Servicio de Cursos (`course-service`)
 
 *   **Descripción**: Gestionará la creación, el contenido y los metadatos de los cursos. Actualmente es un placeholder.
@@ -77,7 +85,7 @@ El proyecto se divide en varios microservicios independientes que se comunican a
 
 *   **Ejemplos de uso con `curl`**:
 
-    *   **Crear un curso (requiere token):**
+    *   **Crear un curso (requiere token de Instructor o Admin):**
         ```bash
         # Reemplaza <TU_TOKEN_JWT> con el token obtenido en el login
         curl -X POST http://localhost:8082/courses \
